@@ -4,7 +4,11 @@ from datetime import datetime, timedelta
 
 from bot.config import get_settings
 from bot.db.models import SecurityLog, User
-from bot.db.repository import add_security_log, get_user_by_hash, update_user_subscription
+from bot.db.repository import (
+    add_security_log,
+    get_user_by_hash,
+    update_user_subscription,
+)
 from bot.security.crypto import encrypt_text, telegram_id_hash
 from bot.services.tariffs import Tariff, get_tariff
 
@@ -68,7 +72,11 @@ def grant_subscription(
     tariff = get_tariff(tariff_code)
     user = ensure_user(telegram_id, username)
     new_end = compute_new_end(user.subscription_end, tariff.months)
-    update_user_subscrip
+    update_user_subscription(user.id, new_end, tariff.code)
+    return SubscriptionUpdate(user=user, new_end=new_end, tariff=tariff)
+
+
+def log_security_action(
     telegram_id: int | None,
     action: str,
     meta: str | None = None,
@@ -86,11 +94,7 @@ def grant_subscription(
         telegram_id_hash=digest,
         action=action,
         meta=meta,
-    
-    settings = get_settings()
-    digest = telegram_id_hash(settings.app_secret, telegram_id) if telegram_id is not None else None
-    encrypted_id = encrypt_text(settings.fernet_key, str(telegram_id)) if telegram_id is not None else None
-    log = SecurityLog(telegram_id=encrypted_id, telegram_id_hash=digest, action=action, meta=meta)
+    )
     add_security_log(log)
 
 
