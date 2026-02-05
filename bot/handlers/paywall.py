@@ -85,8 +85,12 @@ async def buy_tariff(callback: CallbackQuery, bot: Bot) -> None:
     tariff_code = callback.data.replace("buy:", "")
     tariff = get_tariff(tariff_code)
     settings = get_settings()
-    if settings.admin1_id and callback.from_user.id == settings.admin1_id:
-        grant_subscription(callback.from_user.id, callback.from_user.username, tariff.code)
+    if callback.from_user.id in settings.admin_ids:
+        grant_subscription(
+            callback.from_user.id,
+            callback.from_user.username,
+            tariff.code,
+        )
         try:
             invite = await issue_invite_link(
                 bot,
