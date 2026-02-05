@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Jeffrey Bot Admin</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Admin Console</h1>
+            <div class="subtitle">Jeffrey Epstein Bot Manager</div>
+        </header>
+
+        <div class="grid animate-up delay-1">
+            <div class="card">
+                <div class="card-label">Total Users</div>
+                <div class="card-value" id="stats-users">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Active Subs</div>
+                <div class="card-value" id="stats-subs">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Revenue (XTR)</div>
+                <div class="card-value" id="stats-stars">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Today</div>
+                <div class="card-value" id="stats-today">+0%</div>
+            </div>
+        </div>
+
+        <div class="actions animate-up delay-2">
+            <button class="btn" onclick="openBroadcast()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Broadcast Message
+            </button>
+            <button class="btn btn-secondary" onclick="requestDataRefresh()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M23 4V10H17" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M1 20V14H7" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3.51 9.00003C4.01717 7.56681 4.87913 6.28543 6.00929 5.28945C7.13945 4.29348 8.49756 3.61901 9.94436 3.33423C11.3912 3.04944 12.8753 3.16432 14.2443 3.66723C15.6133 4.17013 16.8188 5.04301 17.75 6.20003L23 10M1 14L6.25 17.8C7.18118 18.957 8.38673 19.8299 9.75574 20.3328C11.1248 20.8357 12.6088 20.9506 14.0556 20.6658C15.5024 20.3811 16.8605 19.7066 17.9907 18.7106C19.1209 17.7146 19.9828 16.4332 20.49 15" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Refresh Data
+            </button>
+        </div>
+    </div>
+
+    <!-- Broadcast Modal -->
+    <div class="overlay" id="overlay" onclick="closeBroadcast()"></div>
+    <div class="modal" id="broadcast-modal">
+        <h2 style="margin-top: 0;">New Broadcast</h2>
+        <p style="color: #666; font-size: 14px;">Send a message to all users.</p>
+        <textarea id="broadcast-text" rows="4" placeholder="Type your message here..."></textarea>
+        <button class="btn" onclick="sendBroadcast()">Send Now</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

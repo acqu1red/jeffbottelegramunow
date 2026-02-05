@@ -6,6 +6,7 @@ from aiogram import Bot, Dispatcher
 from bot.config import get_settings
 from bot.db.session import init_db
 from bot.handlers.access import router as access_router
+from bot.handlers.admin import router as admin_router
 from bot.handlers.payments import router as payments_router
 from bot.handlers.paywall import router as paywall_router
 from bot.handlers.system import router as system_router
@@ -25,6 +26,7 @@ async def main() -> None:
 
     bot = build_bot()
     dp = Dispatcher()
+    dp.include_router(admin_router)
     dp.include_router(system_router)
     dp.include_router(paywall_router)
     dp.include_router(payments_router)
