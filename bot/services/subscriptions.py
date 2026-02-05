@@ -28,7 +28,10 @@ def add_months(start: datetime, months: int) -> datetime:
 
 
 def compute_new_end(current_end: datetime | None, months: int) -> datetime:
-    base = current_end if current_end and current_end > datetime.utcnow() else datetime.utcnow()
+    if current_end and current_end > datetime.utcnow():
+        base = current_end
+    else:
+        base = datetime.utcnow()
     return add_months(base, months)
 
 
@@ -39,7 +42,11 @@ def ensure_user(telegram_id: int, username: str | None) -> User:
     if user:
         return user
     encrypted_id = encrypt_text(settings.fernet_key, str(telegram_id))
-    encrypted_username = encrypt_text(settings.fernet_key, username) if username else None
+    if username:
+        encrypted_username = encrypt_text(settings.fernet_key, username)
+    else:
+        encrypted_username = None
+
     user = User(
         telegram_id=encrypted_id,
         telegram_id_hash=digest,
@@ -53,15 +60,33 @@ def ensure_user(telegram_id: int, username: str | None) -> User:
     return upsert_user(user)
 
 
-def grant_subscription(telegram_id: int, username: str | None, tariff_code: str) -> SubscriptionUpdate:
+def grant_subscription(
+    telegram_id: int,
+    username: str | None,
+    tariff_code: str,
+) -> SubscriptionUpdate:
     tariff = get_tariff(tariff_code)
     user = ensure_user(telegram_id, username)
     new_end = compute_new_end(user.subscription_end, tariff.months)
-    update_user_subscription(user.id, new_end, tariff.code)
-    return SubscriptionUpdate(user=user, new_end=new_end, tariff=tariff)
+    update_user_subscrip
+    telegram_id: int | None,
+    action: str,
+    meta: str | None = None,
+) -> None:
+    settings = get_settings()
+    if telegram_id is not None:
+        digest = telegram_id_hash(settings.app_secret, telegram_id)
+        encrypted_id = encrypt_text(settings.fernet_key, str(telegram_id))
+    else:
+        digest = None
+        encrypted_id = None
 
-
-def log_security_action(telegram_id: int | None, action: str, meta: str | None = None) -> None:
+    log = SecurityLog(
+        telegram_id=encrypted_id,
+        telegram_id_hash=digest,
+        action=action,
+        meta=meta,
+    
     settings = get_settings()
     digest = telegram_id_hash(settings.app_secret, telegram_id) if telegram_id is not None else None
     encrypted_id = encrypt_text(settings.fernet_key, str(telegram_id)) if telegram_id is not None else None

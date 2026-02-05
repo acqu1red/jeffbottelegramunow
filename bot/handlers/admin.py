@@ -33,7 +33,7 @@ async def admin_panel_handler(message: Message):
         active_subs = session.scalar(
             select(func.count(User.id)).where(
                 User.subscription_end > datetime.utcnow(),
-                User.is_active == True
+                User.is_active.is_(True)
             )
         ) or 0
         
@@ -46,7 +46,12 @@ async def admin_panel_handler(message: Message):
         ) or 0
 
         # Users Today (Created since midnight UTC)
-        start_of_day = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        start_of_day = datetime.utcnow().replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
         users_today = session.scalar(
             select(func.count(User.id)).where(User.created_at >= start_of_day)
         ) or 0
