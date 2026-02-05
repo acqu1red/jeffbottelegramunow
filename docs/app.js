@@ -70,4 +70,25 @@ function sendBroadcast() {
 }
 
 // Initial mock load
-requestDataRefresh();
+// requestDataRefresh();
+
+// Parse stats from URL parameters
+function loadStatsFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    
+    // Default to '--' if not present
+    const users = params.get('users') || '--';
+    const subs = params.get('subs') || '--';
+    const revenue = params.get('revenue') || '--';
+    const today = params.get('today') || '--';
+
+    updateStats({
+        users: users,
+        active_subs: subs,
+        revenue: revenue,
+        today: today
+    });
+}
+
+// Load stats immediately
+loadStatsFromUrl();

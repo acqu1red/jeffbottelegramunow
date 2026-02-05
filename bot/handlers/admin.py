@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import (
@@ -7,7 +8,11 @@ from aiogram.types import (
     InlineKeyboardButton,
     WebAppInfo
 )
+from sqlalchemy import func, select
+
 from bot.config import get_settings
+from bot.db.session import SessionLocal
+from bot.db.models import User, Payment
 
 router = Router()
 
@@ -19,13 +24,52 @@ async def admin_panel_handler(message: Message):
         # Silently ignore non-admins or say unknown command
         return
 
+    # Fetch global stats
+    with SessionLocal() as session:
+        # Total Users
+        total_users = session.scalar(select(func.count(User.id))) or 0
+        
+        # Active Subs (future end date and active flag)
+        active_subs = session.scalar(
+            select(func.count(User.id)).where(
+                User.subscription_end > datetime.utcnow(),
+                User.is_active == True
+            )
+        ) or 0
+        
+        # Revenue (Sum of 'paid' XTR payments)
+        revenue = session.scalar(
+            select(func.sum(Payment.amount)).where(
+                Payment.currency == 'XTR',
+                Payment.status == 'paid'
+            )
+        ) or 0
+
+        # Users Today (Created since midnight UTC)
+        start_of_day = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        users_today = session.scalar(
+            select(func.count(User.id)).where(User.created_at >= start_of_day)
+        ) or 0
+
+    # formatting 'today' string
+    today_sign = "+" if users_today > 0 else ""
+    today_str = f"{today_sign}{users_today}"
+    
+    base_url = "https://acqu1red.github.io/jeffbottelegramunow/"
+    # Embed stats into the URL query params
+    webapp_url = (
+        f"{base_url}"
+        f"?users={total_users}"
+        f"&subs={active_subs}"
+        f"&revenue={revenue}"
+        f"&today={today_str}"
+    )
+
     markup = InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(
                 text="📱 Open Admin Console",
-                web_app=WebAppInfo(
-                    url="https://acqu1red.github.io/jeffbottelegramunow/"
-                )
+                web_app=WebAppInfo(url=webapp_url)
             )
         ]
     ])
