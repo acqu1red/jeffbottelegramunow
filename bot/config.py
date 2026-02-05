@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     fernet_key: str
     database_url: str
     webhook_base_url: str
-    tinkoff_terminal_key: str
-    tinkoff_secret: str
+    tinkoff_terminal_key: str | None = None
+    tinkoff_secret: str | None = None
     admin_password_hash: str
     admin_password_salt: str
     app_secret: str
